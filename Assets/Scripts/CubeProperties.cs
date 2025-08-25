@@ -1,57 +1,62 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
-// Этот скрипт отвечает за все начальные свойства куба
-public class CubeProperties : MonoBehaviour  
+public class CubeProperties : MonoBehaviour
 {
-    [SerializeField] private Vector3 cubeSize = Vector3.one;
+    [SerializeField] private Vector3 _cubeSize = Vector3.one;
+    private float currentSplitChance = 1f;
     
-    private void Start()  
+    [Header("Настройки цвета")]
+    [SerializeField] private float _minColorValue = 0f;
+    [SerializeField] private float _maxColorValue = 1f;
+    
+    private void Start()
     {
         ApplyCubeSize();
-        ApplyCubeColor();
+        ApplyRandomColor();
     }
     
-    private void ApplyCubeSize()  
+    private void ApplyCubeSize()
     {
-        transform.localScale = cubeSize;
+        transform.localScale = _cubeSize;
     }
     
-    private void ApplyCubeColor()  
+    private void ApplyRandomColor()
     {
-        Renderer cubeRenderer = GetComponent<Renderer>(); 
-        
-        if (cubeRenderer != null) 
+        Renderer renderer = GetComponent<Renderer>();
+        if (renderer != null)
         {
-            cubeRenderer.material.color = new Color(
-            Random.Range(0f, 1f),
-            Random.Range(0f, 1f),
-            Random.Range(0f, 1f),
-            1f
+            renderer.material.color = new Color(
+                Random.Range(_minColorValue, _maxColorValue),
+                Random.Range(_minColorValue, _maxColorValue), 
+                Random.Range(_minColorValue, _maxColorValue)
             );
         }
     }
     
-    private void OnValidate()  
+    private void OnValidate()
     {
-        SynchronizeCubeDimensions();
+        _cubeSize = new Vector3(_cubeSize.x, _cubeSize.x, _cubeSize.x);
     }
-    
-    private void SynchronizeCubeDimensions()  
+
+    public void SetCubeSize(float size)
     {
-        if (cubeSize.x != cubeSize.y || cubeSize.x != cubeSize.z)  
-        {
-            cubeSize = new Vector3(cubeSize.x, cubeSize.x, cubeSize.x);  
-        }
-    }
-    
-    public void SetCubeSize(float newSize)  
-    {
-        cubeSize = new Vector3(newSize, newSize, newSize);
+        _cubeSize = new Vector3(size, size, size);
         ApplyCubeSize();
     }
-    
-    public Vector3 GetCubeSize()  
+
+    public Vector3 GetCubeSize()
     {
-        return cubeSize;
+        return _cubeSize;
+    }
+
+    public void SetSplitChance(float chance)
+    {
+        currentSplitChance = chance;
+    }
+
+    public float GetCurrentSplitChance()
+    {
+        return currentSplitChance;
     }
 }
