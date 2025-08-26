@@ -1,32 +1,36 @@
 using UnityEngine;
-using UnityEngine.Serialization;
+using UnityEngine;
 
-public class CubeProperties : MonoBehaviour
+public class Cube : MonoBehaviour
 {
     [SerializeField] private Vector3 _cubeSize = Vector3.one;
-    private float currentSplitChance = 1f;
-    
-    [Header("Настройки цвета")]
     [SerializeField] private float _minColorValue = 0f;
     [SerializeField] private float _maxColorValue = 1f;
     
+    private float _currentSplitChance = 1f;
+    private Renderer _cubeRenderer;
+    
+    private void Awake()
+    {
+        _cubeRenderer = GetComponent<Renderer>();
+    }
+
     private void Start()
     {
         ApplyCubeSize();
         ApplyRandomColor();
     }
-    
+
     private void ApplyCubeSize()
     {
         transform.localScale = _cubeSize;
     }
-    
+
     private void ApplyRandomColor()
     {
-        Renderer renderer = GetComponent<Renderer>();
-        if (renderer != null)
+        if (_cubeRenderer != null)
         {
-            renderer.material.color = new Color(
+            _cubeRenderer.material.color = new Color(
                 Random.Range(_minColorValue, _maxColorValue),
                 Random.Range(_minColorValue, _maxColorValue), 
                 Random.Range(_minColorValue, _maxColorValue)
@@ -52,11 +56,11 @@ public class CubeProperties : MonoBehaviour
 
     public void SetSplitChance(float chance)
     {
-        currentSplitChance = chance;
+        _currentSplitChance = chance;
     }
 
     public float GetCurrentSplitChance()
     {
-        return currentSplitChance;
+        return _currentSplitChance;
     }
 }

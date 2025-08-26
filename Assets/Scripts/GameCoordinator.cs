@@ -1,76 +1,98 @@
 using UnityEngine;
 using System.Collections.Generic;
-using UnityEngine.Serialization;
 
-public class GameCoordinator : MonoBehaviour  
+public class GameCoordinator : MonoBehaviour
 {
     [Header("Настройки игры")]
     [SerializeField] private float _explosionForce = 50f;
     [SerializeField] private float _explosionRadius = 5f;
     [SerializeField] private float _initialSplitChance = 1f;
-    
-    [Header("Системы игры")]
-    [SerializeField] private CubeSpawner _cubeSpawner;
-    [SerializeField] private CubeExploder _cubeExploder;
-    [SerializeField] private InputDetector _inputDetector;
-    
+
     [Header("Настройки вероятности")]
     [SerializeField] private float _chanceMultiplier = 0.5f;
     [SerializeField] private float _minSplitChance = 0.01f;
+    
+    [Header("Настройки случайности")]
     [SerializeField] private float _minRandomValue = 0f;
     [SerializeField] private float _maxRandomValue = 1f;
+
+    [Header("Системы игры")]
+    [SerializeField] private CubeSpawner _cubeSpawner;
+    [SerializeField] private CubeExploder _cubeExploder;
+    [SerializeField] private InputHandler _inputHandler;
+    [SerializeField] private RaycastController _raycastController;
     
-    private List<GameObject> _allCubes = new List<GameObject>();
-    
-    private void Start()
+    private void Awake()
     {
-        _inputDetector.OnCubeClicked += HandleCubeClick;_inputDetector.OnCubeClicked += HandleCubeClick;
+        if (_inputHandler == null)
+        {
+            _inputHandler = FindObjectOfType<InputHandler>();
+        }
+
+        if (_raycastController == null)
+        {
+            _raycastController = FindObjectOfType<RaycastController>();
+        }
+
+        if (_cubeSpawner == null)
+        {
+            _cubeSpawner = FindObjectOfType<CubeSpawner>();
+        }
+
+        if (_cubeExploder == null)
+        {
+            _cubeExploder = FindObjectOfType<CubeExploder>();
+        }
     }
     
-    private void HandleCubeClick(GameObject clickedCube, Vector3 cubeScale)
+    private void OnEnable()
     {
-        bool shouldSplit = CheckSplitChance(clickedCube);
+        _inputHandler.MouseButtonPressed += HandleMouseClick;
+        _raycastController.CubeFound += HandleCubeFound;
+    }
+    
+    private void OnDisable()
+    {
+        _inputHandler.MouseButtonPressed -= HandleMouseClick;
+        _raycastController.CubeFound -= HandleCubeFound;
+    }
+    
+    private void HandleMouseClick(Vector3 mousePosition)
+    {
+        _raycastController.CastRayFromMousePosition(mousePosition);
+    }
+    
+    private void HandleCubeFound(GameObject cubeObject)
+    {
+        bool canSplit = CanCubeSplit(cubeObject);
 
-        if (shouldSplit)
+        if (canSplit)
         {
-            Vector3 cubePosition = clickedCube.transform.position;
-            List<GameObject> newCubes = _cubeSpawner.CreateChildCubes(cubePosition, cubeScale, _initialSplitChance * 0.5f);
+            Cube cube = cubeObject.GetComponent<Cube>();
+            Vector3 cubePosition = cubeObject.transform.position;
+            Vector3 cubeScale = cube.GetCubeSize();
+            List<Cube> newCubes = _cubeSpawner.CreateChildCubes(cubePosition, cubeScale, _initialSplitChance * _chanceMultiplier);
             _cubeExploder.ExplodeCubes(newCubes, cubePosition, _explosionForce, _explosionRadius);
         }
         
-        _cubeSpawner.DestroyCube(clickedCube);
-        _allCubes.Remove(clickedCube);
+        _cubeSpawner.DestroyCube(cubeObject);
     }
     
-    private bool CheckSplitChance(GameObject cube)
+    private bool CanCubeSplit(GameObject cubeObject)
     {
-        CubeProperties cubeProps = cube.GetComponent<CubeProperties>();
-
-        if (cubeProps == null)
+        Cube cube = cubeObject.GetComponent<Cube>();
+        
+        if (cube == null)
         {
-            Debug.LogError("Объект не содержит компонент CubeProperties!");
-            
+            Debug.LogError("Объект не куб!");
             return false;
         }
         
-        float currentChance = cubeProps.GetCurrentSplitChance();
+        float currentChance = cube.GetCurrentSplitChance();
         float newChance = currentChance * _chanceMultiplier;
         bool canSplit = newChance > _minSplitChance;
         bool shouldSplit = Random.Range(_minRandomValue, _maxRandomValue) <= newChance;
 
         return shouldSplit && canSplit;
-    }
-    
-    public void RegisterCube(GameObject cube)
-    {
-        if (!_allCubes.Contains(cube))
-        {
-            _allCubes.Add(cube);
-        }
-    }
-    
-    public void UnregisterCube(GameObject cube)
-    {
-        _allCubes.Remove(cube);
     }
 }

@@ -5,34 +5,29 @@ public class CubeExploder : MonoBehaviour
 {
     [Header("Настройки взрыва")]
     [SerializeField] private float _torqueMultiplier = 0.1f;
-    [SerializeField] private float _fullForceMultiplier = 1f;
     
-    public void ExplodeCubes(List<GameObject> cubes, Vector3 explosionCenter, float force, float radius)
+    public void ExplodeCubes(List<Cube> cubes, Vector3 explosionCenter, float force, float radius)
     {
-        foreach (GameObject cube in cubes)
+        List<Rigidbody> rigidbodies = new List<Rigidbody>();
+        
+        foreach (Cube cube in cubes)
         {
-            ApplyExplosionToCube(cube, explosionCenter, force, radius);
+            Rigidbody rb = cube.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rigidbodies.Add(rb);
+            }
         }
+        
+        ApplyExplosion(rigidbodies, explosionCenter, force, radius);
     }
     
-    private void ApplyExplosionToCube(GameObject cube, Vector3 explosionCenter, float force, float radius)
+    private void ApplyExplosion(List<Rigidbody> rigidbodies, Vector3 explosionCenter, float force, float radius)
     {
-        Rigidbody cubeRb = cube.GetComponent<Rigidbody>();
-        
-        if (cubeRb != null)
+        foreach (Rigidbody rb in rigidbodies)
         {
-            Vector3 direction = (cube.transform.position - explosionCenter);
-            float distanceSqr = direction.sqrMagnitude;
-            float radiusSqr = radius * radius;
-            
-            if (distanceSqr < radiusSqr)
-            {
-                direction.Normalize();
-                float distance = Mathf.Sqrt(distanceSqr);
-                float explosionForce = force * (_fullForceMultiplier - distance / radius);
-                cubeRb.AddForce(direction * explosionForce, ForceMode.Impulse);
-                cubeRb.AddTorque(Random.insideUnitSphere * explosionForce * _torqueMultiplier, ForceMode.Impulse);
-            }
+            rb.AddExplosionForce(force, explosionCenter, radius);
+            rb.AddTorque(Random.insideUnitSphere * force * _torqueMultiplier, ForceMode.Impulse);
         }
     }
 }

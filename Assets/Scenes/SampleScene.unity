@@ -202,6 +202,7 @@ GameObject:
   - component: {fileID: 330585554}
   - component: {fileID: 330585553}
   - component: {fileID: 330585552}
+  - component: {fileID: 330585555}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -342,13 +343,14 @@ MonoBehaviour:
   _explosionForce: 50
   _explosionRadius: 5
   _initialSplitChance: 1
-  _cubeSpawner: {fileID: 330585552}
-  _cubeExploder: {fileID: 330585553}
-  _inputDetector: {fileID: 330585554}
   _chanceMultiplier: 0.5
   _minSplitChance: 0.01
   _minRandomValue: 0
   _maxRandomValue: 1
+  _cubeSpawner: {fileID: 330585552}
+  _cubeExploder: {fileID: 330585553}
+  _inputHandler: {fileID: 330585554}
+  _raycastController: {fileID: 330585555}
 --- !u!114 &330585552
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -361,7 +363,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c1952b3064ca1447a8c899155a1fda8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _cubePrefab: {fileID: 4132097802948673540, guid: 9f59b1a9154895e4f9796611b6520a6a, type: 3}
+  _cubePrefab: {fileID: 7032781296406516259, guid: 9f59b1a9154895e4f9796611b6520a6a, type: 3}
   _minCubes: 2
   _maxCubes: 6
   _spawnOffset: 0.5
@@ -379,7 +381,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _torqueMultiplier: 0.1
-  _fullForceMultiplier: 1
 --- !u!114 &330585554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -390,6 +391,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: db2589f0579bd424f9dd0d7421ea93f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &330585555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b8727a86bbdbca4fa52e4463896bed3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &410087039
