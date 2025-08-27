@@ -10,23 +10,18 @@ public class GameCoordinator : MonoBehaviour
 
     [Header("Настройки вероятности")]
     [SerializeField] private float _chanceMultiplier = 0.5f;
-    [SerializeField] private float _minSplitChance = 0.01f;
-    
-    [Header("Настройки случайности")]
-    [SerializeField] private float _minRandomValue = 0f;
-    [SerializeField] private float _maxRandomValue = 1f;
 
     [Header("Системы игры")]
+    [SerializeField] private InputReader _inputReader;
+    [SerializeField] private RaycastController _raycastController;
     [SerializeField] private CubeSpawner _cubeSpawner;
     [SerializeField] private CubeExploder _cubeExploder;
-    [SerializeField] private InputHandler _inputHandler;
-    [SerializeField] private RaycastController _raycastController;
     
     private void Awake()
     {
-        if (_inputHandler == null)
+        if (_inputReader == null)
         {
-            _inputHandler = FindObjectOfType<InputHandler>();
+            _inputReader = FindObjectOfType<InputReader>();
         }
 
         if (_raycastController == null)
@@ -44,55 +39,47 @@ public class GameCoordinator : MonoBehaviour
             _cubeExploder = FindObjectOfType<CubeExploder>();
         }
     }
-    
+
     private void OnEnable()
     {
-        _inputHandler.MouseButtonPressed += HandleMouseClick;
+        _inputReader.Clicked += HandleClick;
         _raycastController.CubeFound += HandleCubeFound;
     }
-    
+
     private void OnDisable()
     {
-        _inputHandler.MouseButtonPressed -= HandleMouseClick;
+        _inputReader.Clicked -= HandleClick;
         _raycastController.CubeFound -= HandleCubeFound;
     }
-    
-    private void HandleMouseClick(Vector3 mousePosition)
+
+    private void HandleClick(Vector3 mousePosition)
     {
         _raycastController.CastRayFromMousePosition(mousePosition);
     }
-    
-    private void HandleCubeFound(GameObject cubeObject)
+
+    private void HandleCubeFound(Cube cube)
     {
-        bool canSplit = CanCubeSplit(cubeObject);
+        bool canSplit = CanCubeSplit(cube);
 
         if (canSplit)
         {
-            Cube cube = cubeObject.GetComponent<Cube>();
-            Vector3 cubePosition = cubeObject.transform.position;
-            Vector3 cubeScale = cube.GetCubeSize();
-            List<Cube> newCubes = _cubeSpawner.CreateChildCubes(cubePosition, cubeScale, _initialSplitChance * _chanceMultiplier);
+            Vector3 cubePosition = cube.transform.position;
+            Vector3 cubeScale = cube.CubeSize;
+            
+            float newSplitChance = _initialSplitChance * _chanceMultiplier;
+            
+            List<Cube> newCubes = _cubeSpawner.CreateChildCubes(cubePosition, cubeScale, newSplitChance);
             _cubeExploder.ExplodeCubes(newCubes, cubePosition, _explosionForce, _explosionRadius);
         }
-        
-        _cubeSpawner.DestroyCube(cubeObject);
-    }
-    
-    private bool CanCubeSplit(GameObject cubeObject)
-    {
-        Cube cube = cubeObject.GetComponent<Cube>();
-        
-        if (cube == null)
-        {
-            Debug.LogError("Объект не куб!");
-            return false;
-        }
-        
-        float currentChance = cube.GetCurrentSplitChance();
-        float newChance = currentChance * _chanceMultiplier;
-        bool canSplit = newChance > _minSplitChance;
-        bool shouldSplit = Random.Range(_minRandomValue, _maxRandomValue) <= newChance;
 
-        return shouldSplit && canSplit;
+        _cubeSpawner.DestroyCube(cube.gameObject);
+    }
+
+    private bool CanCubeSplit(Cube cube)
+    {
+        float currentChance = cube.CurrentSplitChance;
+        float newChance = currentChance * _chanceMultiplier;
+        
+        return Random.Range(0f, 1f) <= newChance;
     }
 }

@@ -8,7 +8,7 @@ public class CubeSpawner : MonoBehaviour
     [SerializeField] private int _maxCubes = 6;
     [SerializeField] private float _spawnOffset = 0.5f;
     [SerializeField] private float _scaleMultiplier = 0.5f;
-    
+
     public List<Cube> CreateChildCubes(Vector3 position, Vector3 parentScale, float splitChance)
     {
         List<Cube> newCubes = new List<Cube>();
@@ -23,7 +23,7 @@ public class CubeSpawner : MonoBehaviour
 
         return newCubes;
     }
-    
+
     public Cube CreateSingleCube(Vector3 position, Vector3 scale, float splitChance)
     {
         Vector3 spawnPosition = position + Random.insideUnitSphere * _spawnOffset;
@@ -33,7 +33,7 @@ public class CubeSpawner : MonoBehaviour
 
         return newCube;
     }
-    
+
     public void DestroyCube(GameObject cube)
     {
         Destroy(cube);

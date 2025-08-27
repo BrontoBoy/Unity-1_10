@@ -1,15 +1,16 @@
 using UnityEngine;
-using UnityEngine;
 
+[RequireComponent(typeof(Renderer))]
+[RequireComponent(typeof(Rigidbody))]
 public class Cube : MonoBehaviour
 {
     [SerializeField] private Vector3 _cubeSize = Vector3.one;
-    [SerializeField] private float _minColorValue = 0f;
-    [SerializeField] private float _maxColorValue = 1f;
-    
-    private float _currentSplitChance = 1f;
+    private float _splitChance = 1f;
     private Renderer _cubeRenderer;
     
+    public Vector3 CubeSize => _cubeSize;
+    public float CurrentSplitChance => _splitChance;
+
     private void Awake()
     {
         _cubeRenderer = GetComponent<Renderer>();
@@ -18,7 +19,6 @@ public class Cube : MonoBehaviour
     private void Start()
     {
         ApplyCubeSize();
-        ApplyRandomColor();
     }
 
     private void ApplyCubeSize()
@@ -26,18 +26,6 @@ public class Cube : MonoBehaviour
         transform.localScale = _cubeSize;
     }
 
-    private void ApplyRandomColor()
-    {
-        if (_cubeRenderer != null)
-        {
-            _cubeRenderer.material.color = new Color(
-                Random.Range(_minColorValue, _maxColorValue),
-                Random.Range(_minColorValue, _maxColorValue), 
-                Random.Range(_minColorValue, _maxColorValue)
-            );
-        }
-    }
-    
     private void OnValidate()
     {
         _cubeSize = new Vector3(_cubeSize.x, _cubeSize.x, _cubeSize.x);
@@ -49,18 +37,8 @@ public class Cube : MonoBehaviour
         ApplyCubeSize();
     }
 
-    public Vector3 GetCubeSize()
-    {
-        return _cubeSize;
-    }
-
     public void SetSplitChance(float chance)
     {
-        _currentSplitChance = chance;
-    }
-
-    public float GetCurrentSplitChance()
-    {
-        return _currentSplitChance;
+        _splitChance = chance;
     }
 }

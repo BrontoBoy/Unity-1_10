@@ -344,13 +344,10 @@ MonoBehaviour:
   _explosionRadius: 5
   _initialSplitChance: 1
   _chanceMultiplier: 0.5
-  _minSplitChance: 0.01
-  _minRandomValue: 0
-  _maxRandomValue: 1
+  _inputReader: {fileID: 330585554}
+  _raycastController: {fileID: 330585555}
   _cubeSpawner: {fileID: 330585552}
   _cubeExploder: {fileID: 330585553}
-  _inputHandler: {fileID: 330585554}
-  _raycastController: {fileID: 330585555}
 --- !u!114 &330585552
 MonoBehaviour:
   m_ObjectHideFlags: 0
