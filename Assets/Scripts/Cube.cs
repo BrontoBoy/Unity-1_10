@@ -4,41 +4,25 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody))]
 public class Cube : MonoBehaviour
 {
-    [SerializeField] private Vector3 _cubeSize = Vector3.one;
-    private float _splitChance = 1f;
-    private Renderer _cubeRenderer;
+    [SerializeField] private Vector3 _size = Vector3.one;
     
-    public Vector3 CubeSize => _cubeSize;
-    public float CurrentSplitChance => _splitChance;
-
-    private void Awake()
+    public Vector3 Size => _size;
+    public float SplitChance { get; private set; } = 1f;
+    
+    private void OnValidate()
     {
-        _cubeRenderer = GetComponent<Renderer>();
+        _size = new Vector3(_size.x, _size.x, _size.x);
     }
 
     private void Start()
     {
-        ApplyCubeSize();
+        transform.localScale = _size;
     }
 
-    private void ApplyCubeSize()
+    public void Initialize(float size, float splitChance)
     {
-        transform.localScale = _cubeSize;
-    }
-
-    private void OnValidate()
-    {
-        _cubeSize = new Vector3(_cubeSize.x, _cubeSize.x, _cubeSize.x);
-    }
-
-    public void SetCubeSize(float size)
-    {
-        _cubeSize = new Vector3(size, size, size);
-        ApplyCubeSize();
-    }
-
-    public void SetSplitChance(float chance)
-    {
-        _splitChance = chance;
+        _size = new Vector3(size, size, size);
+        SplitChance = splitChance;
+        transform.localScale = _size;
     }
 }

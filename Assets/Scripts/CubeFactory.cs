@@ -1,41 +1,41 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class CubeSpawner : MonoBehaviour
+public class CubeFactory : MonoBehaviour
 {
     [SerializeField] private Cube _cubePrefab;
     [SerializeField] private int _minCubes = 2;
     [SerializeField] private int _maxCubes = 6;
     [SerializeField] private float _spawnOffset = 0.5f;
-    [SerializeField] private float _scaleMultiplier = 0.5f;
+    [SerializeField] private float _sizeMultiplier = 0.5f;
+    [SerializeField] private float _chanceMultiplier = 0.5f;
 
-    public List<Cube> CreateChildCubes(Vector3 position, Vector3 parentScale, float splitChance)
+    public List<Cube> CreateCubes(Vector3 position, Cube parentCube)
     {
         List<Cube> newCubes = new List<Cube>();
+        float newSize = parentCube.Size.x * _sizeMultiplier;
+        float newSplitChance = parentCube.SplitChance * _chanceMultiplier;
         int cubeCount = Random.Range(_minCubes, _maxCubes + 1);
-        Vector3 newScale = parentScale * _scaleMultiplier;
 
         for (int i = 0; i < cubeCount; i++)
         {
-            Cube newCube = CreateSingleCube(position, newScale, splitChance);
+            Cube newCube = CreateCube(position, newSize, newSplitChance);
             newCubes.Add(newCube);
         }
 
         return newCubes;
     }
 
-    public Cube CreateSingleCube(Vector3 position, Vector3 scale, float splitChance)
+    private Cube CreateCube(Vector3 position, float size, float splitChance)
     {
         Vector3 spawnPosition = position + Random.insideUnitSphere * _spawnOffset;
         Cube newCube = Instantiate(_cubePrefab, spawnPosition, Random.rotation);
-        newCube.SetCubeSize(scale.x);
-        newCube.SetSplitChance(splitChance);
-
+        newCube.Initialize(size, splitChance);
         return newCube;
     }
 
-    public void DestroyCube(GameObject cube)
+    public void DestroyCube(Cube cube)
     {
-        Destroy(cube);
+        Destroy(cube.gameObject);
     }
 }
