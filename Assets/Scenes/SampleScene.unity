@@ -343,7 +343,6 @@ MonoBehaviour:
   _explosionForce: 50
   _explosionRadius: 5
   _initialSplitChance: 1
-  _inputReader: {fileID: 330585554}
   _mouseClickRaycaster: {fileID: 330585555}
   _cubeFactory: {fileID: 330585552}
   _cubeExploder: {fileID: 330585553}
@@ -402,6 +401,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b8727a86bbdbca4fa52e4463896bed3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _inputReader: {fileID: 330585554}
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0

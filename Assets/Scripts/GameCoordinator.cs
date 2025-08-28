@@ -9,66 +9,26 @@ public class GameCoordinator : MonoBehaviour
     [SerializeField] private float _initialSplitChance = 1f;
 
     [Header("Системы игры")]
-    [SerializeField] private InputReader _inputReader;
     [SerializeField] private MouseClickRaycaster _mouseClickRaycaster;
     [SerializeField] private CubeFactory _cubeFactory;
     [SerializeField] private CubeExploder _cubeExploder;
     
-    private void Awake()
-    {
-        FindMissingReferences();
-    }
-
     private void OnEnable()
     {
-        SubscribeToEvents();
+        if (_mouseClickRaycaster != null)
+        {
+            _mouseClickRaycaster.CubeClicked += HandleCubeClick;
+        }
     }
 
     private void OnDisable()
     {
-        UnsubscribeFromEvents();
+        if (_mouseClickRaycaster != null)
+        {
+            _mouseClickRaycaster.CubeClicked -= HandleCubeClick;
+        }
     }
     
-    private void FindMissingReferences()
-    {
-        if (_inputReader == null)
-        {
-            _inputReader = FindObjectOfType<InputReader>();
-        }
-
-        if (_mouseClickRaycaster == null)
-        {
-            _mouseClickRaycaster = FindObjectOfType<MouseClickRaycaster>();
-        }
-
-        if (_cubeFactory == null)
-        {
-            _cubeFactory = FindObjectOfType<CubeFactory>();
-        }
-
-        if (_cubeExploder == null)
-        {
-            _cubeExploder = FindObjectOfType<CubeExploder>();
-        }
-    }
-
-    private void SubscribeToEvents()
-    {
-        _inputReader.Clicked += HandleClick;
-        _mouseClickRaycaster.CubeClicked += HandleCubeClick;
-    }
-
-    private void UnsubscribeFromEvents()
-    {
-        _inputReader.Clicked -= HandleClick;
-        _mouseClickRaycaster.CubeClicked -= HandleCubeClick;
-    }
-    
-    private void HandleClick(Vector3 mousePosition)
-    {
-        _mouseClickRaycaster.CastRayFromMousePosition(mousePosition);
-    }
-
     private void HandleCubeClick(Cube cube)
     {
         if (CanCubeSplit(cube))
